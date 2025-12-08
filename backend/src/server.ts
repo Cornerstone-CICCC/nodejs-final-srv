@@ -12,7 +12,8 @@ import connectDB from './config/db'
 import authRoutes from './routes/auth.routes'
 import profileRoutes from './routes/profile.routes'
 import roomRoutes from './routes/room.routes'
-// import { registerChatSocket } from './sockets/chat.socket'
+import messageRoutes from './routes/message.routes'
+import { registerChatHandlers } from './sockets/chat.socket' // ✅ Integración modular del socket
 
 const app = express()
 
@@ -20,8 +21,8 @@ const app = express()
 // MIDDLEWARE
 // ───────────────────────────────────────────────────────────
 app.use(cors({
-  origin: 'http://localhost:5173', // ✅ Frontend URL
-  credentials: true,               // ✅ Para permitir cookies cross-origin
+  origin: 'http://localhost:5173', // ✅ Frontend URL (Vite)
+  credentials: true,               // ✅ Necesario para cookies cross-origin
 }))
 
 // 🛡️ Middleware para prevenir errores si el body JSON viene vacío
@@ -45,6 +46,7 @@ app.use(cookieParser())
 app.use('/api/auth', authRoutes)
 app.use('/api/profile', profileRoutes)
 app.use('/api/rooms', roomRoutes)
+app.use('/api/messages', messageRoutes)
 
 app.get('/', (_, res) => {
   res.send('✅ API is running')
@@ -57,15 +59,13 @@ const server = http.createServer(app)
 
 const io = new Server(server, {
   cors: {
-    origin: 'http://localhost:5173', // ✅ Igual que el frontend
+    origin: 'http://localhost:5173',
     credentials: true,
   },
 })
 
-io.on('connection', (socket) => {
-  console.log('🟢 New socket connected:', socket.id)
-  // registerChatSocket(io, socket)
-})
+// ✅ Modular: Manejadores de sockets (chat, eventos, etc.)
+registerChatHandlers(io)
 
 // ───────────────────────────────────────────────────────────
 // DATABASE & SERVER LAUNCH
