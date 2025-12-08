@@ -6,17 +6,21 @@ export interface IUser extends Document {
   email?: string
   passwordHash: string
   createdAt: Date
+
+  name?: string
+  bio?: string
+  location?: string
+  website?: string
+  avatar?: string
 }
 
 const userSchema = new Schema<IUser>({
-  // 🎨 UI HOOK: 'username' se mostrará en el chat y listas de usuarios
   username: {
     type: String,
     required: true,
     unique: true,
     trim: true,
   },
-  // 🎨 UI HOOK: puedes mostrar/editar email en un futuro perfil
   email: {
     type: String,
     trim: true,
@@ -30,6 +34,13 @@ const userSchema = new Schema<IUser>({
     type: Date,
     default: Date.now,
   },
+
+  // Campos de perfil opcionales
+  name: { type: String, trim: true },
+  bio: { type: String, trim: true },
+  location: { type: String, trim: true },
+  website: { type: String, trim: true },
+  avatar: { type: String, trim: true },
 })
 
 export const User = mongoose.model<IUser>('User', userSchema)
