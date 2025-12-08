@@ -8,11 +8,10 @@ import cors from 'cors'
 import cookieParser from 'cookie-parser'
 import http from 'http'
 import { Server } from 'socket.io'
-
 import connectDB from './config/db'
 import authRoutes from './routes/auth.routes'
 import profileRoutes from './routes/profile.routes'
-// import roomRoutes from './routes/room.routes'
+import roomRoutes from './routes/room.routes'
 // import { registerChatSocket } from './sockets/chat.socket'
 
 const app = express()
@@ -21,8 +20,8 @@ const app = express()
 // MIDDLEWARE
 // ───────────────────────────────────────────────────────────
 app.use(cors({
-  origin: true,
-  credentials: true,
+  origin: 'http://localhost:5173', // ✅ Frontend URL
+  credentials: true,               // ✅ Para permitir cookies cross-origin
 }))
 
 // 🛡️ Middleware para prevenir errores si el body JSON viene vacío
@@ -45,7 +44,7 @@ app.use(cookieParser())
 // ───────────────────────────────────────────────────────────
 app.use('/api/auth', authRoutes)
 app.use('/api/profile', profileRoutes)
-// app.use('/api/rooms', roomRoutes)
+app.use('/api/rooms', roomRoutes)
 
 app.get('/', (_, res) => {
   res.send('✅ API is running')
@@ -58,7 +57,7 @@ const server = http.createServer(app)
 
 const io = new Server(server, {
   cors: {
-    origin: true,
+    origin: 'http://localhost:5173', // ✅ Igual que el frontend
     credentials: true,
   },
 })
